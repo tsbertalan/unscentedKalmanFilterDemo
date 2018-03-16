@@ -34,6 +34,9 @@ public:
   ///* time when the state is true, in us
   long long time_us_;
 
+  // previous timestamp
+  double previous_timestamp_;
+
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
 
@@ -90,6 +93,8 @@ public:
    * @param delta_t Time between k and k+1 in s
    */
   void Prediction(double delta_t);
+  
+  void GenerateAugmentedSigmaPoints(MatrixXd* Xsig_out);
 
   /**
    * Updates the state and the state covariance matrix using a laser measurement
