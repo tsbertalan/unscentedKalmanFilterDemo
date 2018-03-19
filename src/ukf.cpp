@@ -11,8 +11,8 @@ using std::vector;
 /**
  * Angle normalization
  * @param {double} a The angle in radians
- * 
- * Returns an angle in the range [-pi, pi] 
+ *
+ * Returns an angle in the range [-pi, pi]
  */
 double anorm(double a) {
   while(a > M_PI)
@@ -35,26 +35,25 @@ UKF::UKF() {
   use_radar_ = true;
 
   // initial state vector
-  // State is x, y, tangential velocity, yaw, yaw velocity: 
+  // State is x, y, tangential velocity, yaw, yaw velocity:
   // px, py, v, psi, psidot
   x_ = VectorXd(5);
 
   // initial covariance matrix
   P_ = MatrixXd(5, 5);
   P_.fill(0.0);
-  int i = 0;
-  P_(i, i) = 1; i++; // Var x
-  P_(i, i) = 1; i++; // Var y
-  P_(i, i) = 2; i++; // Var v
-  P_(i, i) = 1; i++; // Var yaw
-  P_(i, i) = 2; i++; // Var vyaw
+  P_(0, 0) = 1; // Var x
+  P_(1, 1) = 1; // Var y
+  P_(2, 2) = 2; // Var v
+  P_(3, 3) = 1; // Var yaw
+  P_(4, 4) = 2; // Var vyaw
 
   // process noise standard deviation longitudinal acceleration in m/s^2
   std_a_ = .1 * 2.5;
 
   // process noise standard deviation yaw acceleration in rad/s^2
   std_yawdd_ = .1 * 2.5;
-  
+
   //DO NOT MODIFY measurement noise values below these are provided by the sensor manufacturer.
   // Laser measurement noise standard deviation position1 in m
   std_laspx_ = 0.15;
@@ -71,7 +70,7 @@ UKF::UKF() {
   // radar measurement noise standard deviation radius change in m/s
   std_radrd_ = 0.3;
   //DO NOT MODIFY measurement noise values above these are provided by the sensor manufacturer.
-  
+
   // state dimension
   n_x_ = 5;
 
@@ -121,7 +120,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       y = ro * sin(theta);
 
       // "Although radar gives velocity data in the form of the range rate,
-      //  a radar measurement does not contain enough information 
+      //  a radar measurement does not contain enough information
       //  to determine the state variable velocities."
       v = 0;
       psidot = 0;
@@ -158,8 +157,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       previous_timestamp_ = t;
       Prediction(dt);
       UpdateRadar(meas_package);
-    } else 
-    if(meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
+    } else if(meas_package.sensor_type_ == MeasurementPackage::LASER && use_laser_) {
       previous_timestamp_ = t;
       Prediction(dt);
       UpdateLidar(meas_package);
@@ -184,8 +182,7 @@ void UKF::Prediction(double delta_t) {
   GenerateAugmentedSigmaPoints(&Xsig_aug);
 
   // Predict sigma points.
-  for (int i = 0; i< 2*n_aug_+1; i++)
-  {
+  for (int i = 0; i< 2*n_aug_+1; i++) {
     // Extract values for better readability.
     double p_x = Xsig_aug(0,i);
     double p_y = Xsig_aug(1,i);
@@ -200,11 +197,11 @@ void UKF::Prediction(double delta_t) {
 
     // Avoid division by zero.
     if (fabs(yawd) > 0.001) {
-        px_p = p_x + v/yawd * ( sin (yaw + yawd*delta_t) - sin(yaw));
-        py_p = p_y + v/yawd * ( cos(yaw) - cos(yaw+yawd*delta_t) );
+      px_p = p_x + v/yawd * ( sin (yaw + yawd*delta_t) - sin(yaw));
+      py_p = p_y + v/yawd * ( cos(yaw) - cos(yaw+yawd*delta_t) );
     } else {
-        px_p = p_x + v*delta_t*cos(yaw);
-        py_p = p_y + v*delta_t*sin(yaw);
+      px_p = p_x + v*delta_t*cos(yaw);
+      py_p = p_y + v*delta_t*sin(yaw);
     }
 
     // Define noise components.
@@ -242,7 +239,7 @@ void UKF::Prediction(double delta_t) {
 
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
-    
+
     // angle normalization
     // TODO: Use a state vector object that handles this automatically with a setter method.
     x_diff(3) = anorm(x_diff(3));
@@ -283,12 +280,11 @@ void UKF::GenerateAugmentedSigmaPoints(MatrixXd* Xsig_out) {
 
   // augmented sigma points
   Xsig_aug.col(0)  = x_aug;
-  for (int i = 0; i< n_aug_; i++)
-  {
+  for (int i = 0; i< n_aug_; i++) {
     Xsig_aug.col(i+1)        = x_aug + sqrt(lambda_+n_aug_) * L.col(i);
     Xsig_aug.col(i+1+n_aug_) = x_aug - sqrt(lambda_+n_aug_) * L.col(i);
   }
-  
+
   // Write result.
   *Xsig_out = Xsig_aug;
 }
@@ -308,7 +304,7 @@ void UKF::UpdateLidar(MeasurementPackage &meas_package) {
 
   // TODO: Obviously there's a lot of code duplication between this and UpdateRadar; refactor to reuse.
 
-  ///////////////// PREDICT MEASUREMENT ///////////////// 
+  ///////////////// PREDICT MEASUREMENT /////////////////
 
   // Predict lidar measurment.
   // 1. Take predicted (unaugmented) sigma points, and
@@ -333,7 +329,7 @@ void UKF::UpdateLidar(MeasurementPackage &meas_package) {
   VectorXd z_pred = VectorXd(n_z);
   z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
-      z_pred = z_pred + weights_(i) * Zsig.col(i);
+    z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
 
   // 2b
@@ -353,11 +349,11 @@ void UKF::UpdateLidar(MeasurementPackage &meas_package) {
   // Add measurement noise covariance matrix.
   MatrixXd R = MatrixXd(n_z, n_z);
   R <<    std_laspx_*std_laspx_, 0,
-          0, std_laspy_*std_laspy_;
+  0, std_laspy_*std_laspy_;
   S = S + R;
 
 
-  /////////////////  APPLY BAYES RULE ///////////////// 
+  /////////////////  APPLY BAYES RULE /////////////////
 
   // Extract the measurment vector.
   VectorXd z = meas_package.raw_measurements_;
@@ -412,7 +408,7 @@ void UKF::UpdateRadar(MeasurementPackage &meas_package) {
   You'll also need to calculate the radar NIS.
   */
 
-  ///////////////// PREDICT MEASUREMENT ///////////////// 
+  ///////////////// PREDICT MEASUREMENT /////////////////
 
   // Predict radar measurment.
   // 1. Take predicted (unaugmented) sigma points, and
@@ -450,7 +446,7 @@ void UKF::UpdateRadar(MeasurementPackage &meas_package) {
   VectorXd z_pred = VectorXd(n_z);
   z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
-      z_pred = z_pred + weights_(i) * Zsig.col(i);
+    z_pred = z_pred + weights_(i) * Zsig.col(i);
   }
 
   // 2b
@@ -475,7 +471,7 @@ void UKF::UpdateRadar(MeasurementPackage &meas_package) {
   S = S + R;
 
 
-  /////////////////  APPLY BAYES RULE ///////////////// 
+  /////////////////  APPLY BAYES RULE /////////////////
 
   // Extract the measurment vector.
   VectorXd z = meas_package.raw_measurements_;
