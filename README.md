@@ -51,3 +51,6 @@ OUTPUT: values provided by the c++ program to the simulator
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
+## Code Provenance
+
+Rather than reinventing the wheel, some of the code in this repository came, with slight modifications, from the Udacity [UKF module](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/daf3dee8-7117-48e8-a27a-fc4769d2b954/concepts/07444c9b-b4be-4615-96e1-e1b221a9add6); other parts (e.g. the `UKF::UpdateLidar` method) are new (but still obviously derived from the Udacity code). There are a couple `TODO` comments indicating where it would be logical to generalize the Udacity approach in the future.
