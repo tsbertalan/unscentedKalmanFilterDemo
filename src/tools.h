@@ -27,18 +27,4 @@ public:
 
 };
 
-// Because auto is implemented with templating, these functions
-// need to be defined in the header file.
-void print(auto thing, bool doEndl=true) {
-  std::cout << thing;
-  if(doEndl) {
-    std::cout << endl;
-  }
-}
-
-void printt(auto thing1, auto thing2, bool doEndl=true) {
-  print(thing1, false);
-  print(thing2, doEndl);
-}
-
 #endif /* TOOLS_H_ */

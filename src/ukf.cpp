@@ -109,7 +109,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   if(! is_initialized_) {
     previous_timestamp_ = 1e-6 * meas_package.timestamp_;
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
-      print("Initializing with RADAR.");
+      cout << "Initializing with RADAR." << endl;
       /**
       Convert radar from polar to cartesian coordinates and initialize state.
       */
@@ -132,7 +132,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       P_(1, 1) *= 4; // Vy
 
     } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
-      print("Initializing with LIDAR.");
+      cout << "Initializing with LIDAR." << endl;
       double x = meas_package.raw_measurements_[0];
       double y = meas_package.raw_measurements_[1];
       x_ << x, y, 0, anorm(tan(y / x)), 0;
