@@ -54,3 +54,15 @@ A well written README file can enhance your project and portfolio.  Develop your
 ## Code Provenance
 
 Rather than reinventing the wheel, some of the code in this repository came, with slight modifications, from the Udacity [UKF module](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/daf3dee8-7117-48e8-a27a-fc4769d2b954/concepts/07444c9b-b4be-4615-96e1-e1b221a9add6); other parts (e.g. the `UKF::UpdateLidar` method) are new (but still obviously derived from the Udacity code). There are a couple `TODO` comments indicating where it would be logical to generalize the Udacity approach in the future.
+
+## Parameter Choice
+
+To get a reasonable values for the yaw/tangential acceleration standard deviations, I plotted the ground truth data, as well as the finite differences of the velocity data (see `datavis.py`).
+
+![ground truth data with acceleration estimates](data_vs_time.png)
+
+I also computed the standard deviations of this data (see inset) for a lower bound on the variation expected in accelerations. For the noise parameters, I approximately tripled these.
+
+## Covariance Initialization
+
+Since both initialization methods give no information about the initial velocity, I set the velocity (tangential and yaw) components of the initial variance rather high. On the other hand, the LIDAR provides better (x,y) initialization than the RADAR, so I made it's corresponding initial covariance entries lower.
