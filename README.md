@@ -2,7 +2,15 @@
 Self-Driving Car Engineer Nanodegree Program
 
 In [this project](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/c3eb3583-17b2-4d83-abf7-d852ae1b9fff/concepts/f437b8b0-f2d8-43b0-9662-72ac4e4029c1), 
-I use an Unscented Kalman Filter to estimate the state of a moving object of interest with noisy lidar and radar measurements.
+I use an Unscented Kalman Filter (UKF) to estimate the state of a moving object of interest with noisy lidar and radar measurements.
+
+As with any Bayesian filter, the UKF uses a prediction step and an update step to integrate sensor information with a motion model to estimate a belief distribution for an evolving state. The prediction step propagates the belief forward to the current time using a nonlinear probabilistic motion model and an application of the law of total probability, while the update step uses Bayes rule. Both of these steps involve the computation of expectations--Lebesgue integrals, weighted by probability distributions.
+
+When the motion and observation models (transformations) are linear, and the belief is (assumed to be) Gaussian, these expectations can be computed analytically. However, when these transformations are nonlinear, various tricks are required. The extended Kalman filter (EKF) deals with this problem by computing a local linearization of the transformations, after which the algorithm reduces to the vanilla Kalman filter. However, in regions of state space where the transformation functions have high curvature in relation to the width of the gaussian, this linearization is a poor approximation.
+
+On the other hand, if the transformations can be evaluated pointwise at will, the UKF is applicable. Here, the weighted integrals in question are computed through a method reminiscent of Gaussian quadrature--an array of carefully chosen "sigma points" are propagated through the transformation, then summed with prescribed weights. As the trapezoidal rule for integrating a function prescribes a weighted sum of a grid of evaluations of the function, Gaussian quadrature methods [[Xiu]][1] approximate weighted integrals using a set of nodes and weights derived from the zeros of a set of polynomials defined to be orthogonal with respect to an inner product weighted by the distribution in question. E.g., for a standard Gaussian distribution, the relevant zeros are those of the Hermite polynomials. (For unknown distributions, the polynomials can be approximated using the moments of the distribution [[Oladyshkin & Nowak]][2], though this method has its drawbacks.)
+
+Extending this program of deriving state estimation methods from Bayesian filters using alternative ways of computing expectations will lead, in our next project, to the particle filter, which uses Monte Carlo "integration".
 
 ## Code Provenance
 
@@ -66,3 +74,13 @@ OUTPUT: values provided by the c++ program to the simulator
   * Linux: gcc / g++ is installed by default on most Linux distros
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
+
+## Bibliography
+
+[1]: http://books.google.com/books/p/princeton?id=GY9qyJd4CvQC&pgis=1
+
+Xiu, D. (2010). Numerical Methods for Stochastic Computations: A Spectral Method Approach. Princeton, NJ: Princeton University Press.
+
+[2]:  https://doi.org/10.1016/j.ress.2012.05.002
+
+Oladyshkin, S., & Nowak, W. (2012). Data-driven uncertainty quantification using the arbitrary polynomial chaos expansion. Reliability Engineering & System Safety, 106, 179–190.
